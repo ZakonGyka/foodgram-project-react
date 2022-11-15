@@ -12,7 +12,7 @@ SECRET_KEY = '2h%13*iea&)-h5d3elsr3&yu@z%esfug3f12b4l_!sv6)^#_02'
 # SECRET_KEY = os.getenv('SECRET_KEY', 'path_to_.env')
 
 # DEBUG = os.getenv('DEBUG', False)
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost', '188.68.220.30']

@@ -7,15 +7,12 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2h%13*iea&)-h5d3elsr3&yu@z%esfug3f12b4l_!sv6)^#_02'
-# SECRET_KEY = os.getenv('SECRET_KEY', 'path_to_.env')
+SECRET_KEY = os.getenv('SECRET_KEY'),
 
-# DEBUG = os.getenv('DEBUG', False)
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost', '188.68.220.30']
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '188.68.220.30']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -44,8 +41,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend.urls'
 
-# TEMPLATES_DIR = os.path.join(BASE_DIR, '../../frontend/build')
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -68,7 +63,6 @@ DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE',
                             default='django.db.backends.postgresql'),
-        # 'ENGINE': os.getenv('DB_ENGINE'),
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
@@ -104,10 +98,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, '../../frontend/build/static')
-# ]
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

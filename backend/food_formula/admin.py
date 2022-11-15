@@ -30,18 +30,21 @@ class RecipeIngredientInline(admin.TabularInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'author', 'text', 'cooking_time', 'pub_date', 'image',
+        'id', 'name', 'author', 'text',
+        'cooking_time', 'pub_date', 'image', 'favorite_count',
                     )
     list_filter = ('name', 'author', 'tags')
     ordering = ('-pub_date',)
     inline = (RecipeIngredientInline, )
-    readonly_fields = ('favorite_count', 'pub_date')
+    # readonly_fields = ('favorite_count', 'pub_date')
     list_display_links = ('name',)
     search_fields = ('name',)
+    empty_value_display = '-пусто-'
 
     @admin.display(description='Кол-во добавлений в избранное')
     def favorite_count(self, recipe):
         return recipe.favorites_recipe.count()
+    favorite_count.short_description = 'Число добавлений в избранное'
 
 
 @admin.register(IngredientRecipe)

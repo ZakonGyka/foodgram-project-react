@@ -26,8 +26,8 @@ class User(AbstractUser):
     )
     first_name = models.CharField(verbose_name='Имя', max_length=150)
     last_name = models.CharField(verbose_name='Фамилия', max_length=150)
-    is_superuser = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False) # можено попробовать убрать
+    is_active = models.BooleanField(default=True) # можено попробовать убрать
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
 

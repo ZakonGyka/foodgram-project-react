@@ -11,7 +11,6 @@ SECRET_KEY = os.getenv('SECRET_KEY'),
 
 DEBUG = False
 
-# ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['*', '127.0.0.1', '[::1]', 'localhost']
 
 INSTALLED_APPS = [
@@ -118,7 +117,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS':
         'food_formula.paginations.CustomPageNumberPagination',
-    'PAGE_SIZE': 6
+    'PAGE_SIZE': 4
 }
 
 DJOSER = {

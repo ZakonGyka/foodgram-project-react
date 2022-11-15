@@ -6,6 +6,9 @@ from .models import User
 
 
 class RecipeFilter(rest_framework_filter.FilterSet):
+    """
+    Настройка фильтров модели рецептов.
+    """
     author = rest_framework_filter.ModelChoiceFilter(
         queryset=User.objects.all()
     )
@@ -19,20 +22,29 @@ class RecipeFilter(rest_framework_filter.FilterSet):
         method='filter_is_in_shopping_cart'
     )
 
+    class Meta:
+        model = Recipe
+        fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
+
     def filter_is_favorited(self, queryset, name, value):
+        """
+        Метод обработки фильтров параметра is_favorited.
+        """
         if self.request.user.is_authenticated and value:
             return queryset.filter(favorites_recipe__user=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
+        """
+        Метод обработки фильтров параметра is_in_shopping_cart.
+        """
         if self.request.user.is_authenticated and value:
             return queryset.filter(carts__user=self.request.user)
         return queryset
 
-    class Meta:
-        model = Recipe
-        fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
-
 
 class IngredientFilter(SearchFilter):
+    """
+    Настройка фильтра поиска модели продуктов.
+    """
     search_param = 'name'

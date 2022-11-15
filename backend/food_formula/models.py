@@ -9,7 +9,7 @@ class Tag(models.Model):
     name = models.CharField('Название тэга', unique=True, max_length=20)
     slug = models.SlugField('Адрес тэга', unique=True, max_length=20)
     color = models.CharField(
-        'Цвет(HEX)', unique=True, max_length=7, default='#49B64E'
+        'Цвет(HEX)', unique=True, max_length=7, default='#75f213'
     )
 
     class Meta:
@@ -63,10 +63,10 @@ class Recipe(models.Model):
         related_name='recipes'
     )
     cooking_time = models.PositiveIntegerField(
-        'Время приготовления',
+        verbose_name='Время приготовления',
         validators=(
             MinValueValidator(
-                1, message='Время приготовления должно быть больше 1 минуты'
+                1, message='Время приготовления не может быть меньше 1 минуты'
             ),
         ),
     )
@@ -100,7 +100,9 @@ class IngredientRecipe(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество ингредиента',
         validators=(
-            MinValueValidator(1, message='Количество не может быть меньше 1'),
+            MinValueValidator(
+                1, message='Количество не может быть меньше 1 единицы'
+            ),
         ),
     )
 

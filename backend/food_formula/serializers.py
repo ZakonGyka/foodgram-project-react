@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from users.models import Follow
 from .models import (
-    Favorite, Ingredient, Recipe, ShoppingCart, Tag, IngredientRecipe
+    Ingredient, Recipe, Favorite, ShoppingCart, Tag, IngredientRecipe
 )
 from .models import User
 
@@ -137,9 +137,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
         if not ingredients:
-            raise serializers.ValidationError('нужен хотя бы один ингредиент')
+            raise serializers.ValidationError(
+                'Добавьте хотя бы один ингредиент'
+            )
         elif not tags:
-            raise serializers.ValidationError('нужен хотя бы один тег')
+            raise serializers.ValidationError(
+                'Добавьте хотя бы один тег'
+            )
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         ingredients_list = [
@@ -182,7 +186,9 @@ class RecipeSerializer(serializers.ModelSerializer):
                     Ingredient, id=ingredient['id']
                 )
                 if ingredient_obj in checked_ingredients:
-                    raise serializers.ValidationError('дубликат ингредиента')
+                    raise serializers.ValidationError(
+                        'Такой ингредиент уже есть'
+                    )
                 checked_ingredients.add(ingredient_obj)
         return data
 

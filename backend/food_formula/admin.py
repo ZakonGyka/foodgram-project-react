@@ -36,7 +36,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags')
     ordering = ('-pub_date',)
     inline = (RecipeIngredientInline, )
-    # readonly_fields = ('favorite_count', 'pub_date')
     list_display_links = ('name',)
     search_fields = ('name',)
     empty_value_display = '-пусто-'

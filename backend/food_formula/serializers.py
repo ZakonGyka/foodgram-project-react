@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from drf_base64.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
 from users.models import Follow
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,

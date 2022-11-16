@@ -116,8 +116,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS':
-        'food_formula.paginations.CustomPageNumberPagination',
-    'PAGE_SIZE': 4
+        'food_formula.pagination.CustomPagination',
 }
 
 DJOSER = {

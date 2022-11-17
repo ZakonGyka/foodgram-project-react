@@ -178,6 +178,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredient_data = self.initial_data.get('ingredients')
+        # ingredient_data = data.pop('ingredients', None)
+        # ingredient_data = data
         if ingredient_data:
             checked_ingredients = set()
             for ingredient in ingredient_data:
@@ -190,6 +192,36 @@ class RecipeSerializer(serializers.ModelSerializer):
                     )
                 checked_ingredients.add(ingredient_obj)
         return data
+    # def validate(self, data):
+    #     ingredients_list = []
+    #     ingredients = data
+    #     for ingredient in ingredients:
+    #         if not ingredient:
+    #             raise serializers.ValidationError(
+    #                 'Добавьте хотя бы один ингредиент')
+    #         id_to_check = ingredient['ingredient']['id']
+    #         ingredient_to_check = Ingredient.objects.filter(id=id_to_check)
+    #         if not ingredient_to_check.exists():
+    #             raise serializers.ValidationError(
+    #                 'Данный продукт отсутствует в каталоге')
+    #         if ingredient_to_check in ingredients_list:
+    #             raise serializers.ValidationError(
+    #                 'Данный продукт уже есть в рецепте')
+    #         ingredients_list.append(ingredient_to_check)
+    #     return data
+
+    # def validate(self, data):
+    #     ingredients = data.pop('ingredients')
+    #     ingredient_list = []
+    #     for item in ingredients:
+    #         ingredient = get_object_or_404(Ingredient, id=item['id'])
+    #         if ingredient in ingredient_list:
+    #             raise serializers.ValidationError(
+    #             'Ингредиент уже существует.'
+    #             )
+    #         ingredient_list.append(ingredient)
+    #     data['ingredients'] = ingredients
+    #     return data
 
     class Meta:
         model = Recipe

@@ -43,8 +43,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def __favorite_shopping(request, pk, model, errors):
+        recipe = model.objects.filter(user=request.user, recipe__id=pk)
         if request.method == 'POST':
-            if model.objects.filter(user=request.user, recipe__id=pk).exists():
+            if recipe.exists():
                 return Response(
                     {'errors': errors['recipe_in']},
                     status=status.HTTP_400_BAD_REQUEST
@@ -55,7 +56,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe, context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe = model.objects.filter(user=request.user, recipe__id=pk)
         if recipe.exists():
             recipe.delete()
             return Response(

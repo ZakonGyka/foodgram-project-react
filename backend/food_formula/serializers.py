@@ -129,10 +129,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientCreateSerializer(many=True)
     image = Base64ImageField()
 
-    def to_representation(self, instance):
+    def to_representation(self, created_recipes):
+        """
+         Метод представления результатов сериализатора.
+         """
         request = self.context.get('request')
         serializer = RecipeListSerializer(
-            instance,
+            created_recipes,
             context={'request': request}
         )
         return serializer.data
@@ -168,16 +171,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     @transaction.atomic
-    def update(self, instance, validated_data):
+    def update(self, old_recipe, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        IngredientRecipe.objects.filter(recipe=instance).delete()
-        TagRecipe.objects.filter(recipe=instance).delete()
-        instance = self.ingredients_list(
-            tags, ingredients, instance)
-        super().update(instance, validated_data)
-        instance.save()
-        return instance
+        IngredientRecipe.objects.filter(recipe=old_recipe).delete()
+        TagRecipe.objects.filter(recipe=old_recipe).delete()
+        old_recipe = self.ingredients_list(
+            tags, ingredients, old_recipe)
+        super().update(old_recipe, validated_data)
+        old_recipe.save()
+        return old_recipe
 
     def validate(self, data):
         ingredients_list = []

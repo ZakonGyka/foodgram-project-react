@@ -138,41 +138,102 @@ class RecipeSerializer(serializers.ModelSerializer):
         return serializer.data
 
     @transaction.atomic
+    def ingredients_list(self, tags, ingredients, recipe):
+        for tag in tags:
+            recipe.tags.add(tag)
+            recipe.save()
+        for ingredient in ingredients:
+            if not IngredientRecipe.objects.filter(
+                    ingredient_id=ingredient['ingredient']['id'],
+                    recipe=recipe).exists():
+                ingredients_add_into_recipe = IngredientRecipe.objects.create(
+                    ingredient_id=ingredient['ingredient']['id'],
+                    amount=ingredient['amount'],
+                    recipe=recipe)
+                ingredients_add_into_recipe.save()
+            else:
+                IngredientRecipe.objects.filter(
+                    recipe=recipe).delete()
+                recipe.delete()
+                raise serializers.ValidationError(
+                    'Данные продукты повторяются в рецепте!')
+        return recipe
+        # ingredients_list = [
+        #     IngredientRecipe(
+        #         recipe=recipe,
+        #         ingredient_id=ingredient['ingredient']['id'],
+        #         amount=ingredient['amount'],
+        #     )
+        #     for ingredient in ingredients
+        # ]
+
+    @transaction.atomic
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
         recipe = Recipe.objects.create(**validated_data)
-        recipe.tags.set(tags)
-        ingredients_list = [
-            IngredientRecipe(
-                recipe=recipe,
-                ingredient_id=ingredient['ingredient']['id'],
-                amount=ingredient['amount'],
-            )
-            for ingredient in ingredients
-        ]
-        IngredientRecipe.objects.bulk_create(ingredients_list)
+        # recipe.tags.set(tags)
+        # ingredients_list = [
+        #     IngredientRecipe(
+        #         recipe=recipe,
+        #         ingredient_id=ingredient['ingredient']['id'],
+        #         amount=ingredient['amount'],
+        #     )
+        #     for ingredient in ingredients
+        # ]
+        # IngredientRecipe.objects.bulk_create(ingredients_list)
+        recipe = self.ingredients_list(tags, ingredients, recipe)
         return recipe
+
+    # WORK version
+    # @transaction.atomic
+    # def create(self, validated_data):
+    #     ingredients = validated_data.pop('ingredients', None)
+    #     tags = validated_data.pop('tags', None)
+    #     recipe = Recipe.objects.create(**validated_data)
+    #     recipe.tags.set(tags)
+    #     ingredients_list = [
+    #         IngredientRecipe(
+    #             recipe=recipe,
+    #             ingredient_id=ingredient['ingredient']['id'],
+    #             amount=ingredient['amount'],
+    #         )
+    #         for ingredient in ingredients
+    #     ]
+    #     IngredientRecipe.objects.bulk_create(ingredients_list)
+    #     return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
-        instance = super().update(instance, validated_data)
-        if tags:
-            instance.tags.set(tags)
-        if ingredients:
-            instance.ingredients.clear()
-            ingredients_list = [
-                IngredientRecipe(
-                    recipe=instance,
-                    ingredient_id=ingredient['ingredient']['id'],
-                    amount=ingredient['amount'],
-                )
-                for ingredient in ingredients
-            ]
-            IngredientRecipe.objects.bulk_create(ingredients_list)
+        # IngredientRecipe.objects.filter(recipe=instance).delete()
+        instance = self.ingredients_list(
+            tags, ingredients, instance)
+        super().update(instance, validated_data)
+        instance.save()
         return instance
+
+    # WORK version
+    # @transaction.atomic
+    # def update(self, instance, validated_data):
+    #     ingredients = validated_data.pop('ingredients', None)
+    #     tags = validated_data.pop('tags', None)
+    #     instance = super().update(instance, validated_data)
+    #     if tags:
+    #         instance.tags.set(tags)
+    #     if ingredients:
+    #         instance.ingredients.clear()
+    #         ingredients_list = [
+    #             IngredientRecipe(
+    #                 recipe=instance,
+    #                 ingredient_id=ingredient['ingredient']['id'],
+    #                 amount=ingredient['amount'],
+    #             )
+    #             for ingredient in ingredients
+    #         ]
+    #         IngredientRecipe.objects.bulk_create(ingredients_list)
+    #     return instance
 
     def validate(self, data):
         ingredients_list = []

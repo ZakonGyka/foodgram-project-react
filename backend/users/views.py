@@ -25,10 +25,10 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
         methods=['POST']
     )
     def subscribe(self, request, **kwargs):
-        id = kwargs.get('pk')
+        id_index = kwargs.get('pk')
         user = self.request.user
-        author = get_object_or_404(User, id=id)
-        data = {'user': user.id, 'author': id}
+        author = get_object_or_404(User, id=id_index)
+        data = {'user': user.id, 'author': id_index}
         serializer = FollowCreateSerializer(
             data=data, context={'request': request}
         )
@@ -41,9 +41,9 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, **kwargs):
-        id = kwargs.get('pk')
+        id_index = kwargs.get('pk')
         user = self.request.user
-        author = get_object_or_404(User, id=id)
+        author = get_object_or_404(User, id=id_index)
         follow = Follow.objects.filter(user=user, author=author)
         if follow.exists():
             follow.delete()

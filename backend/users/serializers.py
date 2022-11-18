@@ -9,7 +9,10 @@ from rest_framework.validators import UniqueTogetherValidator
 from .models import Follow, User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CheckSubscribed(metaclass=serializers.SerializerMetaclass):
+    """
+    Проверка опредения подписки пользователя на автора.
+    """
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
@@ -21,6 +24,9 @@ class UserSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(
             author=obj, user=self.context['request'].user
         ).exists()
+
+
+class UserSerializer(serializers.ModelSerializer, CheckSubscribed):
 
     def validate(self, data):
         user = User(**data)
@@ -52,19 +58,12 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-class FollowListSerializer(serializers.ModelSerializer):
+class FollowListSerializer(serializers.ModelSerializer, CheckSubscribed):
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.IntegerField(
         source='recipes.count', read_only=True
     )
-
-    def get_is_subscribed(self, obj):
-        if self.context['request'].user.is_anonymous:
-            return False
-        return Follow.objects.filter(
-            author=obj, user=self.context['request'].user
-        ).exists()
 
     def get_recipes(self, obj):
         request = self.context['request']

@@ -1,8 +1,7 @@
 from django.contrib import admin
 
 from food_formula.models import (
-    Ingredient, Recipe, Tag, IngredientRecipe,
-    TagRecipe, ShoppingCart, Favorite
+    Ingredient, Recipe, Tag, IngredientRecipe, ShoppingCart, Favorite
 )
 
 
@@ -26,11 +25,6 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeIngredientInline(admin.TabularInline):
     model = Recipe.ingredients.through
     extra = 1
-
-
-class TagRecipeInline(admin.TabularInline):
-    model = TagRecipe
-    extra = 0
 
 
 @admin.register(Recipe)

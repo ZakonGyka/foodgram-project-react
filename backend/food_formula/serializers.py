@@ -7,7 +7,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from users.models import Follow
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingCart, Tag, User)
+                     ShoppingCart, Tag, TagRecipe, User)
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -169,9 +169,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        ingredients = validated_data.pop('ingredients', None)
-        tags = validated_data.pop('tags', None)
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
         IngredientRecipe.objects.filter(recipe=instance).delete()
+        TagRecipe.objects.filter(recipe=instance).delete()
         instance = self.ingredients_list(
             tags, ingredients, instance)
         super().update(instance, validated_data)

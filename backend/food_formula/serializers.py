@@ -166,8 +166,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             ingredients_list = [
                 IngredientRecipe(
                     recipe=instance,
-                    ingredient=ingredient.get('id'),
-                    amount=ingredient.get('amount')
+                    ingredient_id=ingredient['ingredient']['id'],
+                    amount=ingredient['amount'],
                 )
                 for ingredient in ingredients
             ]

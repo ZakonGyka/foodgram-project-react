@@ -117,6 +117,35 @@ class IngredientRecipe(models.Model):
         )
 
 
+class TagRecipe(models.Model):
+    """
+    Создание модели тегов рецепта
+    (добавления/удаления тега внутри рецепта).
+    """
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        verbose_name='Теги',
+        help_text='Добавьте теги рецепта'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+        help_text='Добавьте рецепт к этому тегу')
+
+    class Meta:
+        verbose_name = 'Теги рецепта'
+        verbose_name_plural = 'Теги рецепта'
+        constraints = [
+            models.UniqueConstraint(fields=['tag', 'recipe'],
+                                    name='unique_tagrecipe')
+        ]
+
+    def __str__(self):
+        return f'{self.tag} {self.recipe}'
+
+
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,

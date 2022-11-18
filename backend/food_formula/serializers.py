@@ -158,56 +158,20 @@ class RecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Данные продукты повторяются в рецепте!')
         return recipe
-        # ingredients_list = [
-        #     IngredientRecipe(
-        #         recipe=recipe,
-        #         ingredient_id=ingredient['ingredient']['id'],
-        #         amount=ingredient['amount'],
-        #     )
-        #     for ingredient in ingredients
-        # ]
 
     @transaction.atomic
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
         recipe = Recipe.objects.create(**validated_data)
-        # recipe.tags.set(tags)
-        # ingredients_list = [
-        #     IngredientRecipe(
-        #         recipe=recipe,
-        #         ingredient_id=ingredient['ingredient']['id'],
-        #         amount=ingredient['amount'],
-        #     )
-        #     for ingredient in ingredients
-        # ]
-        # IngredientRecipe.objects.bulk_create(ingredients_list)
         recipe = self.ingredients_list(tags, ingredients, recipe)
         return recipe
-
-    # WORK version
-    # @transaction.atomic
-    # def create(self, validated_data):
-    #     ingredients = validated_data.pop('ingredients', None)
-    #     tags = validated_data.pop('tags', None)
-    #     recipe = Recipe.objects.create(**validated_data)
-    #     recipe.tags.set(tags)
-    #     ingredients_list = [
-    #         IngredientRecipe(
-    #             recipe=recipe,
-    #             ingredient_id=ingredient['ingredient']['id'],
-    #             amount=ingredient['amount'],
-    #         )
-    #         for ingredient in ingredients
-    #     ]
-    #     IngredientRecipe.objects.bulk_create(ingredients_list)
-    #     return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
-        # IngredientRecipe.objects.filter(recipe=instance).delete()
+        IngredientRecipe.objects.filter(recipe=instance).delete()
         instance = self.ingredients_list(
             tags, ingredients, instance)
         super().update(instance, validated_data)

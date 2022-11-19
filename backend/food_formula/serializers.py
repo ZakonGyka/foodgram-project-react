@@ -67,36 +67,56 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         ]
 
 
-class CheckRecipes(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True)
-    tags = TagSerializer(many=True)
-    ingredients = serializers.SerializerMethodField()
-
-    def get_ingredients(self, obj):
-        queryset = IngredientRecipe.objects.filter(recipe=obj)
-        return IngredientRecipeSerializer(queryset, many=True).data
+class RecipeListIngredientRecipeSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Создание сериализатора модели продуктов в рецепте для чтения.
+    """
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit',
+    )
 
     class Meta:
         model = IngredientRecipe
-        fields = (
-            'id',
-            'author',
-            'ingredients',
-            'name',
-            'image',
-            'text',
-            'cooking_time'
-        )
+        fields = ('id', 'name', 'measurement_unit', 'amount')
+        # validators = [
+        #     UniqueTogetherValidator(
+        #         queryset=IngredientRecipe.objects.all(),
+        #         fields=('ingredient', 'recipe')
+        #     )
+        # ]
+
+# class CheckRecipes(serializers.ModelSerializer):
+#     author = AuthorSerializer(read_only=True)
+#     tags = TagSerializer(many=True)
+#     ingredients = serializers.SerializerMethodField()
+#
+#     def get_ingredients(self, obj):
+#         queryset = IngredientRecipe.objects.filter(recipe=obj)
+#         return IngredientRecipeSerializer(queryset, many=True).data
+#
+#     class Meta:
+#         model = IngredientRecipe
+#         fields = (
+#             'id',
+#             'author',
+#             'ingredients',
+#             'name',
+#             'image',
+#             'text',
+#             'cooking_time'
+#         )
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    ingredients = CheckRecipes(source='ingredientrecipe', many=True, read_only=True)
+    ingredients = RecipeListIngredientRecipeSerializer(source='ingredient_to_recipe', many=True)
     # ingredients = IngredientRecipeSerializer(
     #     source='ingredientrecipe',
     #     many=True)
     # ingredients = serializers.SerializerMethodField()
-    # author = AuthorSerializer(read_only=True)
-    # tags = TagSerializer(many=True)
+    author = AuthorSerializer(read_only=True)
+    tags = TagSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -122,16 +142,16 @@ class RecipeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            # 'id',
-            # 'tags',
-            # 'author',
+            'id',
+            'tags',
+            'author',
             'ingredients',
             'is_favorited',
             'is_in_shopping_cart',
-            # 'name',
-            # 'image',
-            # 'text',
-            # 'cooking_time'
+            'name',
+            'image',
+            'text',
+            'cooking_time'
         )
 
 

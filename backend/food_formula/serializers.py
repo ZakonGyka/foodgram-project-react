@@ -67,9 +67,25 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         ]
 
 
+# class CheckRecipes(serializers.ModelSerializer):
+#     ingredients = serializers.SerializerMethodField()
+#
+#     def get_ingredients(self, obj):
+#         queryset = IngredientRecipe.objects.filter(recipe=obj)
+#         return IngredientRecipeSerializer(queryset, many=True).data
+#
+#     class Meta:
+#         model = IngredientRecipe
+#         fields = ('id', 'ingredients', 'amount')
+
+
 class RecipeListSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True)
+    # ingredients = CheckRecipes(many=True, read_only=True)
+    # ingredients = IngredientRecipeSerializer(
+    #     source='ingredient recipe',
+    #     many=True)
     ingredients = serializers.SerializerMethodField()
+    author = AuthorSerializer(read_only=True)
     tags = TagSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()

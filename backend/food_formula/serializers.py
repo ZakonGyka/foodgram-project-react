@@ -67,32 +67,42 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         ]
 
 
-# class CheckRecipes(serializers.ModelSerializer):
-#     ingredients = serializers.SerializerMethodField()
-#
-#     def get_ingredients(self, obj):
-#         queryset = IngredientRecipe.objects.filter(recipe=obj)
-#         return IngredientRecipeSerializer(queryset, many=True).data
-#
-#     class Meta:
-#         model = IngredientRecipe
-#         fields = ('id', 'ingredients', 'amount')
-
-
-class RecipeListSerializer(serializers.ModelSerializer):
-    # ingredients = CheckRecipes(many=True, read_only=True)
-    # ingredients = IngredientRecipeSerializer(
-    #     source='ingredient recipe',
-    #     many=True)
-    ingredients = serializers.SerializerMethodField()
+class CheckRecipes(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    ingredients = serializers.SerializerMethodField()
 
     def get_ingredients(self, obj):
         queryset = IngredientRecipe.objects.filter(recipe=obj)
         return IngredientRecipeSerializer(queryset, many=True).data
+
+    class Meta:
+        model = IngredientRecipe
+        fields = (
+            'id',
+            'author',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
+
+
+class RecipeListSerializer(serializers.ModelSerializer):
+    ingredients = CheckRecipes(source='ingredientrecipe', many=True, read_only=True)
+    # ingredients = IngredientRecipeSerializer(
+    #     source='ingredientrecipe',
+    #     many=True)
+    # ingredients = serializers.SerializerMethodField()
+    # author = AuthorSerializer(read_only=True)
+    # tags = TagSerializer(many=True)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
+
+    # def get_ingredients(self, obj):
+    #     queryset = IngredientRecipe.objects.filter(recipe=obj)
+    #     return IngredientRecipeSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
@@ -112,16 +122,16 @@ class RecipeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'id',
-            'tags',
-            'author',
+            # 'id',
+            # 'tags',
+            # 'author',
             'ingredients',
             'is_favorited',
             'is_in_shopping_cart',
-            'name',
-            'image',
-            'text',
-            'cooking_time'
+            # 'name',
+            # 'image',
+            # 'text',
+            # 'cooking_time'
         )
 
 

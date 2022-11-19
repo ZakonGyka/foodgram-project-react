@@ -100,14 +100,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .values('ingredient__name', 'ingredient__measurement_unit')
             .annotate(sum_amount=Sum('amount'))
         )
-        data_dict = {}
+        data: dict = {}
         ingredients_list = []
         for item in ingredients_obj:
             name = item['ingredient__name'].capitalize()
             unit = item['ingredient__measurement_unit']
             sum_amount = item['sum_amount']
-            data_dict[name] = [sum_amount, unit]
-        for ind, (key, value) in enumerate(data_dict.items(), 1):
+            data[name] = [sum_amount, unit]
+        for ind, (key, value) in enumerate(data.items(), 1):
             if ind < 10:
                 ind = '0' + str(ind)
             ingredients_list.append(

@@ -5,8 +5,8 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from users.models import Follow
 
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingCart, Tag, TagRecipe, User)
+from food_formula.models import (Favorite, Ingredient, IngredientRecipe,
+                                 Recipe, ShoppingCart, Tag, TagRecipe, User)
 
 
 class IngredientSerializer(serializers.ModelSerializer):

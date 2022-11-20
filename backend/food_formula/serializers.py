@@ -2,7 +2,6 @@ from django.db import transaction
 from drf_base64.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
 from users.models import Follow
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
@@ -63,7 +62,8 @@ class IngredientRecipeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    ingredients = IngredientRecipeSerializer(source='ingredient_to_recipe', many=True)
+    ingredients = IngredientRecipeSerializer(source='ingredient_to_recipe',
+                                             many=True)
     author = AuthorSerializer(read_only=True)
     tags = TagSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()

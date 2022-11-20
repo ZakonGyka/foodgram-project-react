@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from .views import SubscriptionsViewSet, SubscriptionsView
+from .views import SubscriptionsView, SubscriptionsViewSet
 
 app_name = 'users'
 

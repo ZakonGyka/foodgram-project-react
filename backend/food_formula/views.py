@@ -56,12 +56,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe, context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if recipe.exists():
-            recipe.delete()
-            return Response(
-                {'msg': 'Успешно удалено'},
-                status=status.HTTP_204_NO_CONTENT
-            )
+        elif request.method == "DELETE":
+            if recipe.exists():
+                recipe.delete()
+                return Response(
+                    {'msg': 'Успешно удалено'},
+                    status=status.HTTP_204_NO_CONTENT
+                )
         return Response(
             {'error': errors['recipe_not_in']},
             status=status.HTTP_400_BAD_REQUEST

@@ -2,6 +2,7 @@ from django.db import transaction
 from drf_base64.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
 from users.models import Follow
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
@@ -135,22 +136,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     def ingredients_list(self, tags, ingredients, recipe):
         for tag in tags:
             recipe.tags.add(tag)
-            recipe.save()
         for ingredient in ingredients:
             if not IngredientRecipe.objects.filter(
                     ingredient_id=ingredient['ingredient']['id'],
                     recipe=recipe).exists():
-                ingredients_add_into_recipe = IngredientRecipe.objects.create(
+                IngredientRecipe.objects.create(
                     ingredient_id=ingredient['ingredient']['id'],
                     amount=ingredient['amount'],
                     recipe=recipe)
-                ingredients_add_into_recipe.save()
-            else:
-                IngredientRecipe.objects.filter(
-                    recipe=recipe).delete()
-                recipe.delete()
-                raise serializers.ValidationError(
-                    'Данные продукты повторяются в рецепте!')
         return recipe
 
     @transaction.atomic
@@ -170,11 +163,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         old_recipe = self.ingredients_list(
             tags, ingredients, old_recipe)
         super().update(old_recipe, validated_data)
-        old_recipe.save()
         return old_recipe
 
     def validate(self, data):
-        ingredients_list = []
         ingredients = data['ingredients']
         if not ingredients:
             raise serializers.ValidationError(
@@ -183,16 +174,29 @@ class RecipeSerializer(serializers.ModelSerializer):
         if not tags:
             raise serializers.ValidationError(
                 'Добавьте хотя бы один тэг')
+        ingredients_list = []
         for ingredient in ingredients:
             id_to_check = ingredient['ingredient']['id']
             ingredient_to_check = Ingredient.objects.filter(id=id_to_check)
-            if not ingredient_to_check.exists():
+            if not ingredient_to_check:
                 raise serializers.ValidationError(
-                    'Данный продукт отсутствует в каталоге')
-            if ingredient_to_check in ingredients_list:
-                raise serializers.ValidationError(
-                    'Данный продукт уже есть в рецепте')
-            ingredients_list.append(ingredient_to_check)
+                    'Продукт отсутствует в каталоге')
+            else:
+                if id_to_check in ingredients_list:
+                    # name_of_ingredient = Ingredient(id=id_to_check).name
+                    raise serializers.ValidationError(
+                        f'Продукт "{ingredient_to_check[0].name}" - повторяется в рецепте')
+                ingredients_list.append(id_to_check)
+            # name_of_ingredient = ingredient_to_check[0].name
+            # if not ingredient_to_check.exists():
+            #     raise serializers.ValidationError(
+            #         f'Продукт "{name_of_ingredient}" - отсутствует в каталоге')
+            # if id_to_check in ingredients_list:
+            #     # name_of_ingredient = ingredient_to_check[0].name
+            #     # name_of_ingredient = Ingredient(id=id_to_check).name
+            #     raise serializers.ValidationError(
+            #         f'Продукт "{name_of_ingredient}" - повторяется в рецепте')
+            # ingredients_list.append(id_to_check)
         return data
 
     class Meta:

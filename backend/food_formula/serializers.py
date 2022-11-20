@@ -26,19 +26,19 @@ class TagSerializer(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
-            return False
-        return Follow.objects.filter(
-            user=request.user, author=obj.pk).exists()
-
     class Meta:
         model = User
         fields = (
             'email', 'id', 'username', 'first_name', 'last_name',
             'is_subscribed'
         )
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return Follow.objects.filter(
+            user=request.user, author=obj.pk).exists()
 
 
 class IngredientRecipeSerializer(serializers.HyperlinkedModelSerializer):
@@ -70,21 +70,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_is_favorited(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Favorite.objects.filter(user=user.id, recipe=obj.id).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return ShoppingCart.objects.filter(
-            user=user.id,
-            recipe=obj.id
-        ).exists()
-
     class Meta:
         model = Recipe
         fields = (
@@ -99,6 +84,21 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time'
         )
+
+    def get_is_favorited(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Favorite.objects.filter(user=user.id, recipe=obj.id).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return ShoppingCart.objects.filter(
+            user=user.id,
+            recipe=obj.id
+        ).exists()
 
 
 class IngredientCreateSerializer(serializers.ModelSerializer):
@@ -120,6 +120,19 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     ingredients = IngredientCreateSerializer(many=True)
     image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
 
     def to_representation(self, created_recipes):
         """
@@ -183,34 +196,12 @@ class RecipeSerializer(serializers.ModelSerializer):
                     'Продукт отсутствует в каталоге')
             else:
                 if id_to_check in ingredients_list:
-                    # name_of_ingredient = Ingredient(id=id_to_check).name
+                    name_of_ingredient = ingredient_to_check[0].name
                     raise serializers.ValidationError(
-                        f'Продукт "{ingredient_to_check[0].name}" - повторяется в рецепте')
+                        f'Продукт "{name_of_ingredient}" '
+                        f'- повторяется в рецепте')
                 ingredients_list.append(id_to_check)
-            # name_of_ingredient = ingredient_to_check[0].name
-            # if not ingredient_to_check.exists():
-            #     raise serializers.ValidationError(
-            #         f'Продукт "{name_of_ingredient}" - отсутствует в каталоге')
-            # if id_to_check in ingredients_list:
-            #     # name_of_ingredient = ingredient_to_check[0].name
-            #     # name_of_ingredient = Ingredient(id=id_to_check).name
-            #     raise serializers.ValidationError(
-            #         f'Продукт "{name_of_ingredient}" - повторяется в рецепте')
-            # ingredients_list.append(id_to_check)
         return data
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'tags',
-            'author',
-            'ingredients',
-            'name',
-            'image',
-            'text',
-            'cooking_time'
-        )
 
 
 class FollowRecipeSerializer(serializers.ModelSerializer):

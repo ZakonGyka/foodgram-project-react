@@ -43,9 +43,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def __favorite_shopping(request, pk, model, errors):
+        recipe_in_cart = model.objects.filter(user=request.user, recipe__id=pk)
         if request.method == 'POST':
-            recipe = model.objects.filter(user=request.user, recipe__id=pk)
-            if recipe.exists():
+            if recipe_in_cart.exists():
                 return Response(
                     {'errors': errors['recipe_in']},
                     status=status.HTTP_400_BAD_REQUEST
@@ -57,9 +57,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "DELETE":
-            recipe = model.objects.filter(user=request.user, recipe__id=pk)
-            if recipe.exists():
-                recipe.delete()
+            if recipe_in_cart.exists():
+                recipe_in_cart.delete()
                 return Response(
                     {'msg': 'Успешно удалено'},
                     status=status.HTTP_204_NO_CONTENT

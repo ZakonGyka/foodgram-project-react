@@ -44,12 +44,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @staticmethod
     def __favorite_shopping(request, pk, model, errors):
         recipe_in_cart = model.objects.filter(user=request.user, recipe__id=pk)
-        if request.method == 'POST':
-            if recipe_in_cart.exists():
-                return Response(
-                    {'errors': errors['recipe_in']},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        if request.method == 'POST' and recipe_in_cart.exists():
+            return Response(
+                {'errors': errors['recipe_in']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        elif request.method == 'POST':
             recipe = get_object_or_404(Recipe, id=pk)
             model.objects.create(user=request.user, recipe=recipe)
             serializer = FollowRecipeSerializer(

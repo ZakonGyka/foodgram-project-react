@@ -98,7 +98,7 @@ class FollowCreateSerializer(serializers.ModelSerializer):
         slug_field='id',
         queryset=User.objects.all(),
         default=CurrentUserDefault(),
-        ),
+    ),
     author = serializers.SlugRelatedField(
         slug_field='id',
         queryset=User.objects.all())

@@ -6,6 +6,6 @@ urlpatterns = [
     path('api/', include([
         path('', include('users.urls', namespace='users')),
         path('', include('food_formula.urls', namespace='food_formula'))
-                 ])
-         )
+    ])
+    )
 ]

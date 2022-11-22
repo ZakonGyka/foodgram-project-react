@@ -14,7 +14,10 @@ services:
       - ./.env
 
   backend:
-    image: zakongyka/backend:V1
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    # image: zakongyka/backend:V1
     restart: always
     volumes:
       - static_volume:/app/static/

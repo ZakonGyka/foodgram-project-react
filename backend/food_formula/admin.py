@@ -31,8 +31,7 @@ class RecipeIngredientInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'name', 'author', 'text',
-        'cooking_time', 'pub_date', 'image', 'favorite_count',
-                    )
+        'cooking_time', 'pub_date', 'image', 'favorite_count',)
     list_filter = ('name', 'author', 'tags')
     ordering = ('-pub_date',)
     inline = (RecipeIngredientInline, )

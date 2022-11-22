@@ -8,6 +8,4 @@ RUN python -m pip install -U --force-reinstall pip && pip3 install -r requiremen
 
 COPY . .
 
-EXPOSE 8000
-
 CMD ["gunicorn", "backend.wsgi:application", "--bind", "0:8000"]

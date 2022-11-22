@@ -136,3 +136,6 @@ backend/static
 
 # media
 backend/media
+
+# dump
+backend/foodgram_dump.json

@@ -2,10 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    # image: foodgram_frontend:latest
+    image: zakongyka/frontend:v1
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -17,10 +14,7 @@ services:
       - ./.env
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    # image: foodgram_backend:latest
+    image: zakongyka/backend:V1
     restart: always
     volumes:
       - static_volume:/app/static/

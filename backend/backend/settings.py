@@ -71,6 +71,18 @@ DATABASES = {
     }
 }
 
+"""for local testing"""
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'kaktus',
+#         'HOST': 'localhost',
+#         'PORT': '5432'
+#     }
+# }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME':

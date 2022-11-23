@@ -11,7 +11,8 @@ SECRET_KEY = os.getenv('SECRET_KEY'),
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', '[::1]', 'localhost', '51.250.27.128']
+ALLOWED_HOSTS = ['127.0.0.1', '[::1]', 'localhost',
+                 '51.250.27.128', 'hamster.sytes.net']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

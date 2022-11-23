@@ -4,6 +4,7 @@
 
 ## Адрес
 
+http://51.250.27.128
 http://hamster.sytes.net
 
 
